@@ -35,7 +35,10 @@ public class ResumeServiceImpl implements ResumeService {
      */
     @Override
     @Transactional
-    public ResumeDTO uploadResume(MultipartFile file, Long userId) {
+    public ResumeDTO uploadResume(
+            MultipartFile file, 
+            Long userId
+        ) {
         validateFile(file);
 
         TbUserEntity owner = userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(
@@ -67,6 +70,7 @@ public class ResumeServiceImpl implements ResumeService {
                 .map(TbResumeEntity::toDTO)
                 .toList();
     }
+    
     /**
      * Returns a ResumeDTO containing the extracted text and metadata of the requested resume.
      * Throws a 404 ResponseStatusException when the resume is not found.
