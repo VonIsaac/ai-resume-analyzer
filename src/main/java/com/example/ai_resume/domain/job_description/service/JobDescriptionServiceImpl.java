@@ -6,9 +6,7 @@ import com.example.ai_resume.domain.job_description.entity.TbJobDescriptionEntit
 import com.example.ai_resume.domain.job_description.repository.JobDescriptionRepository;
 import com.example.ai_resume.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-
 import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,20 +53,27 @@ public class JobDescriptionServiceImpl implements JobDescriptionService {
     @Transactional(readOnly = true)
     public List<JobDescriptionDTO> getJobDescList(Long userId) {
         return jobDescriptionRepository.findAllByUserIdOrderByCreatedAtDesc(userId)
-        .stream()
-        .map(TbJobDescriptionEntity::toDTO)
-        .toList();
+            .stream()
+            .map(TbJobDescriptionEntity::toDTO)
+            .toList();
     }
 
     /**
-     * Returns a JobDescriptionDTO containing the raw text and metadata of the requested job description.
+     * Returns a JobDescriptionDTO for the given id, but only if it belongs to the caller.
+     * Throws 404 if not found and 403 if owned by another user.
      *
      * @param id the unique identifier of the job description to be retrieved
+     * @param userId the id of the current user (must own the JD)
      * @return the job description DTO
      */
     @Override
     @Transactional(readOnly = true)
-    public JobDescriptionDTO getJobDescById(Long id) {
-        return jobDescriptionRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Job description not found: " + id)).toDTO();
+    public JobDescriptionDTO getJobDescById(Long id, Long userId) {
+        TbJobDescriptionEntity jd = jobDescriptionRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Job description not found: " + id));
+        if (!jd.getUser().getId().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Job description does not belong to user");
+        }
+        return jd.toDTO();
     }
 }

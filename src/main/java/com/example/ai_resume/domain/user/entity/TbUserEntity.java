@@ -1,5 +1,6 @@
 package com.example.ai_resume.domain.user.entity;
 
+import com.example.ai_resume.domain.user.dto.UserDTO;
 import com.example.ai_resume.domain.user.enums.Role;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -48,4 +49,16 @@ public class TbUserEntity {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
+
+    /** Convert this entity to a safe response DTO (never includes the password hash). */
+    public UserDTO toDTO() {
+        return UserDTO.builder()
+                .id(id)
+                .email(email)
+                .fullName(fullName)
+                .role(role)
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
+                .build();
+    }
 }

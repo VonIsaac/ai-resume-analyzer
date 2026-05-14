@@ -1,5 +1,6 @@
 package com.example.ai_resume.domain.resume.controller;
 
+import com.example.ai_resume.core.security.SecurityUtils;
 import com.example.ai_resume.domain.resume.dto.ResumeDTO;
 import com.example.ai_resume.domain.resume.service.ResumeService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,8 +26,6 @@ import java.util.List;
 @Tag(name = "Resumes", description = "Upload and manage resume PDFs")
 public class ResumeRestController {
 
-    private static final Long DEMO_USER_ID = 2L;
-
     private final ResumeService resumeService;
 
     /**
@@ -38,7 +37,7 @@ public class ResumeRestController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Upload a PDF resume and extract its text")
     public ResponseEntity<ResumeDTO> upload(@RequestParam("file") MultipartFile file) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(resumeService.uploadResume(file, DEMO_USER_ID));
+        return ResponseEntity.status(HttpStatus.CREATED).body(resumeService.uploadResume(file, SecurityUtils.currentUserId()));
     }
     /**
      * Endpoint to retrieve all resumes owned by the current user, newest first.
@@ -48,7 +47,7 @@ public class ResumeRestController {
     @GetMapping
     @Operation(summary = "Get all resumes for the current user")
     public ResponseEntity<List<ResumeDTO>> getResumeList() {
-        return ResponseEntity.ok(resumeService.getResumeList(DEMO_USER_ID));
+        return ResponseEntity.ok(resumeService.getResumeList(SecurityUtils.currentUserId()));
     }
 
     /**
@@ -60,6 +59,6 @@ public class ResumeRestController {
     @GetMapping("/{id}")
     @Operation(summary = "Get resume by ID")
     public ResponseEntity<ResumeDTO> getResumeById(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(resumeService.getResumeById(id));
+        return ResponseEntity.ok(resumeService.getResumeById(id, SecurityUtils.currentUserId()));
     }
 }

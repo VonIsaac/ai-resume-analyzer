@@ -26,10 +26,11 @@ public interface JobDescriptionService {
     List<JobDescriptionDTO> getJobDescList(Long userId);
 
     /**
-     * Retrieves a job description by its unique identifier (ID) and returns a JobDescriptionDTO containing the JD's raw text and metadata.
+     * Retrieves a job description by its unique identifier, enforcing that it belongs to the given user.
      *
      * @param id the unique identifier of the job description to retrieve
+     * @param userId the id of the current user (must own the JD)
      * @return the job description DTO
      */
-    JobDescriptionDTO getJobDescById(Long id);
+    JobDescriptionDTO getJobDescById(Long id, Long userId);
 }

@@ -1,5 +1,6 @@
 package com.example.ai_resume.domain.job_description.controller;
 
+import com.example.ai_resume.core.security.SecurityUtils;
 import com.example.ai_resume.domain.job_description.dto.JobDescriptionDTO;
 import com.example.ai_resume.domain.job_description.dto.JobDescriptionRequestDTO;
 import com.example.ai_resume.domain.job_description.service.JobDescriptionService;
@@ -7,9 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-
 import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,8 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Job Descriptions", description = "Create and manage job descriptions")
 public class JobDescriptionRestController {
 
-    private static final Long DEMO_USER_ID = 2L;
-
     private final JobDescriptionService jobDescriptionService;
 
     /**
@@ -39,7 +36,7 @@ public class JobDescriptionRestController {
     @PostMapping
     @Operation(summary = "Create a new job description")
     public ResponseEntity<JobDescriptionDTO> create(@RequestBody @Valid JobDescriptionRequestDTO request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(jobDescriptionService.createJobDescription(request, DEMO_USER_ID));
+        return ResponseEntity.status(HttpStatus.CREATED).body(jobDescriptionService.createJobDescription(request, SecurityUtils.currentUserId()));
     }
 
     /**
@@ -50,7 +47,7 @@ public class JobDescriptionRestController {
     @GetMapping
     @Operation(summary = "Get all job descriptions for the current user")
     public ResponseEntity<List<JobDescriptionDTO>> getJobDescList() {
-        return ResponseEntity.ok(jobDescriptionService.getJobDescList(DEMO_USER_ID));
+        return ResponseEntity.ok(jobDescriptionService.getJobDescList(SecurityUtils.currentUserId()));
     }
 
     /**
@@ -62,7 +59,7 @@ public class JobDescriptionRestController {
     @GetMapping("/{id}")
     @Operation(summary = "Get a job description by ID")
     public ResponseEntity<JobDescriptionDTO> getJobDescById(@PathVariable Long id) {
-        return ResponseEntity.ok(jobDescriptionService.getJobDescById(id));
+        return ResponseEntity.ok(jobDescriptionService.getJobDescById(id, SecurityUtils.currentUserId()));
     }
 
 }

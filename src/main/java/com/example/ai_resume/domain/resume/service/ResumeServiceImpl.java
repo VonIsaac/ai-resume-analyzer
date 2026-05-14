@@ -72,16 +72,22 @@ public class ResumeServiceImpl implements ResumeService {
     }
     
     /**
-     * Returns a ResumeDTO containing the extracted text and metadata of the requested resume.
-     * Throws a 404 ResponseStatusException when the resume is not found.
+     * Returns a ResumeDTO for the given id, but only if the resume belongs to the caller.
+     * Throws 404 if not found and 403 if owned by another user.
      *
      * @param id the unique identifier of the resume to be retrieved
+     * @param userId the id of the current user (must own the resume)
      * @return the resume DTO
      */
     @Override
     @Transactional(readOnly = true)
-    public ResumeDTO getResumeById(Long id) {
-        return resumeRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Resume not found: " + id)).toDTO();
+    public ResumeDTO getResumeById(Long id, Long userId) {
+        TbResumeEntity resume = resumeRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Resume not found: " + id));
+        
+        if (!resume.getUser().getId().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Resume does not belong to user");
+        }
+        return resume.toDTO();
     }
 
     /**

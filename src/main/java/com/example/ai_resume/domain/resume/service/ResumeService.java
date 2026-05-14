@@ -16,11 +16,12 @@ public interface ResumeService {
     ResumeDTO uploadResume(MultipartFile file, Long userId);
 
     /**
-     * Retrieves a resume by its unique identifier (ID) and returns a ResumeDTO containing the resume's extracted text and metadata.
-     * @param id - the unique identifier of the resume to be retrieved, used to query the database for the specific resume entity
+     * Retrieves a resume by its unique identifier (ID), enforcing that it belongs to the given user.
+     * @param id - the unique identifier of the resume to be retrieved
+     * @param userId - the id of the current user (must own the resume)
      * @return - a ResumeDTO containing the extracted text and metadata of the requested resume
      */
-    ResumeDTO getResumeById(Long id);
+    ResumeDTO getResumeById(Long id, Long userId);
 
     /**
      * Retrieves all resumes owned by the given user, ordered by creation date (newest first).
